@@ -1,60 +1,57 @@
-import * as THREE from "three"
-import EventEmitter from "./EventEmitter"
-import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js"
-import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js"
+import * as THREE from "three";
+import EventEmitter from "./EventEmitter";
+import { DRACOLoader } from "three/examples/jsm/loaders/DRACOLoader.js";
+import { GLTFLoader } from "three/examples/jsm/loaders/GLTFLoader.js";
 
 export default class Resources extends EventEmitter {
-   constructor(sources) {
-      super()
+  constructor(sources) {
+    super();
 
-      this.sources = sources
-      
-      this.items = []
-      this.toLoad = this.sources.length
-      this.loaded = 0
+    this.sources = sources;
 
-      this.setLoaders()
-      this.startLoading()
-   }
+    this.items = [];
+    this.toLoad = this.sources.length;
+    this.loaded = 0;
 
-   setLoaders() {
-      this.loaders = {}
+    this.setLoaders();
+    this.startLoading();
+  }
 
-      // draco loader
-      this.loaders.dracoLoader = new DRACOLoader()
-      this.loaders.dracoLoader.setDecoderPath('/draco/')
+  setLoaders() {
+    this.loaders = {};
 
-      // gltf loader
-      this.loaders.gltfLoader = new GLTFLoader()
-      this.loaders.gltfLoader.setDRACOLoader(this.loaders.dracoLoader)
+    // draco loader
+    this.loaders.dracoLoader = new DRACOLoader();
+    this.loaders.dracoLoader.setDecoderPath("/draco/");
 
-      // texture loader
-      this.loaders.textureLoader = new THREE.TextureLoader()
-   }
+    // gltf loader
+    this.loaders.gltfLoader = new GLTFLoader();
+    this.loaders.gltfLoader.setDRACOLoader(this.loaders.dracoLoader);
 
-   startLoading() {
-      for (const source of this.sources) {
-         if (source.type == "GLTFModel") {
-            this.loaders.gltfLoader.load(
-               source.path,
-               (file) => this.sourceLoaded(source, file)
-            )
-         } 
-         else if (source.type == "texture") {
-            this.loaders.textureLoader.load(
-               source.path,
-               (file) => this.sourceLoaded(source, file)
-            )
-         }
+    // texture loader
+    this.loaders.textureLoader = new THREE.TextureLoader();
+  }
+
+  startLoading() {
+    for (const source of this.sources) {
+      if (source.type == "GLTFModel") {
+        this.loaders.gltfLoader.load(source.path, (file) =>
+          this.sourceLoaded(source, file)
+        );
+      } else if (source.type == "texture") {
+        this.loaders.textureLoader.load(source.path, (file) =>
+          this.sourceLoaded(source, file)
+        );
       }
-   }
+    }
+  }
 
-   sourceLoaded(source, file) {
-      this.items[source.name] = {
-         type: source.type,
-         file: file,
-      }
-      this.loaded++
-      if (this.loaded == this.toLoad) this.trigger("ready")
-   }
+  sourceLoaded(source, file) {
+    this.items[source.name] = {
+      type: source.type,
+      file: file,
+    };
+    this.loaded++;
+    if (this.loaded == this.toLoad) this.trigger("ready");
+  }
 }

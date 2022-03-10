@@ -1,29 +1,31 @@
-import Application from "../Application";
-import * as THREE from "three"
-// import Grid from "./Grid";
+import Application from "@/Application/Application";
+// import * as THREE from "three"
+import Grid from "@/Application/World/Objects/Grid";
+// import Axes from "../Utils/Axes";
+import PlanetPrime from "@/Application/World/Objects/PlanetPrime";
 
 export default class World {
-   constructor() {
-      this.application = new Application()
-      this.scene = this.application.scene
-      this.resources = this.application.resources
-      
-      // this.grid = new Grid(10, 10)
-      // console.log(this.grid)
+  constructor() {
+    this.application = new Application();
+    this.scene = this.application.scene;
+    this.resources = this.application.resources;
+    this.gravityObjects = [];
+    this.time = this.application.time;
 
-      this.resources.on("ready", () => {
-         this.prepareAndLoadResources()
-      })
-   }
+    // this.axes = new Axes(10)
 
-   prepareAndLoadResources() {
-      console.log(this.resources)
-      this.resources.items.planetPrimeBakedTexture.file.flipY = false
-      const bakedMaterial = new THREE.MeshBasicMaterial({ map: this.resources.items.planetPrimeBakedTexture.file })
-      // bakedMaterial.encoding = THREE.sRGBEncoding
-      this.resources.items.planetPrimeModel.file.scene.traverse((child) => {
-         child.material = bakedMaterial
-      })
-      this.scene.add(this.resources.items.planetPrimeModel.file.scene)
-   }
+    this.planetPrime = new PlanetPrime();
+    this.planetPrime.on("ready", () => {
+      this.gravityObjects.push({
+        instance: this.planetPrime.instance,
+        name: "PlanetPrime",
+        gridCurvatureProps: {
+          uPowerFactor: 5,
+          uWidth: 500,
+          uDepth: 11.5,
+        },
+      });
+      this.grid = new Grid(1000, 500, this.gravityObjects);
+    });
+  }
 }
