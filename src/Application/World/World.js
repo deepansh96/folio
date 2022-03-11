@@ -3,6 +3,7 @@ import Application from "@/Application/Application";
 import Grid from "@/Application/World/Objects/Grid";
 // import Axes from "../Utils/Axes";
 import PlanetPrime from "@/Application/World/Objects/PlanetPrime";
+import Airplane from "@/Application/World/Objects/Airplane";
 
 export default class World {
   constructor() {
@@ -11,6 +12,7 @@ export default class World {
     this.resources = this.application.resources;
     this.gravityObjects = [];
     this.time = this.application.time;
+    this.numberOfObjectsToAdd = 1;
 
     // this.axes = new Axes(10)
 
@@ -25,7 +27,11 @@ export default class World {
           uDepth: 11.5,
         },
       });
-      this.grid = new Grid(1000, 500, this.gravityObjects);
+      this.numberOfObjectsToAdd--;
+      if (this.numberOfObjectsToAdd == 0)
+        this.grid = new Grid(1000, 500, this.gravityObjects);
     });
+
+    this.airplane = new Airplane();
   }
 }

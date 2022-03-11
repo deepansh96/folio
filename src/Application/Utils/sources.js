@@ -1,4 +1,5 @@
 export default [
+  // planet prime
   {
     name: "planetPrimeModel",
     type: "GLTFModel",
@@ -9,6 +10,20 @@ export default [
     type: "texture",
     path: "/assets/textures/AllBaked512.jpg",
   },
+
+  // airplane
+  {
+    name: "airplaneModel",
+    type: "GLTFModel",
+    path: "/assets/models/airplane.glb",
+  },
+  {
+    name: "airplaneBakedTexture",
+    type: "texture",
+    path: "/assets/textures/AirplaneBaked512.png",
+  },
+
+  // gradients
   {
     name: "gradient3Texture",
     type: "texture",

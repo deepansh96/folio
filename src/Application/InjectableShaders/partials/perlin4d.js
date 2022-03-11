@@ -1,5 +1,5 @@
 export const shader = `
-//	Classic Perlin 4D Noise 
+//	Classic Perlin 4D Noise
 //	by Stefan Gustavson
 //
 vec4 permute(vec4 x){return mod(((x*34.0)+1.0)*x, 289.0);}
@@ -138,4 +138,4 @@ float perlin4d(vec4 P){
   float n_xyzw = mix(n_yzw.x, n_yzw.y, fade_xyzw.x);
   return 2.2 * n_xyzw;
 }
-`
+`;

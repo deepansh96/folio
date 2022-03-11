@@ -413,8 +413,7 @@ var DracoDecoderModule = (function () {
           }
         }
         var atob = decodeBase64;
-        var exports = // EMSCRIPTEN_START_ASM
-        (function a(
+        var exports = (function a( // EMSCRIPTEN_START_ASM
           /** @suppress {uselessCode} */ asmLibraryArg,
           wasmMemory,
           wasmTable

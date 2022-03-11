@@ -4,15 +4,11 @@
  * @param {Object} shaderInstance - The shader itself
  */
 let injectIntoShader = (changes, shaderInstance) => {
-   changes.forEach((change) => {
-      shaderInstance = shaderInstance.replace(
-         change.old, change.new
-      )
-   })
+  changes.forEach((change) => {
+    shaderInstance = shaderInstance.replace(change.old, change.new);
+  });
 
-   return shaderInstance
-}
-
-export {
-   injectIntoShader
+  return shaderInstance;
 };
+
+export { injectIntoShader };
