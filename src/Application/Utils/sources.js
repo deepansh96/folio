@@ -20,7 +20,7 @@ export default [
   {
     name: "airplaneBakedTexture",
     type: "texture",
-    path: "/assets/textures/AirplaneBaked512.png",
+    path: "/assets/textures/AirplaneBaked512.jpg",
   },
 
   // gradients

@@ -2,8 +2,9 @@ import Application from "@/Application/Application.js";
 import EventEmitter from "@/Application/Utils/EventEmitter.js";
 import * as THREE from "three";
 import { injectIntoShader } from "@/Application/Utils/Shaders.js";
-import vShader from "@/Application/InjectableShaders/planetPrime/vertex.js";
-import fShader from "@/Application/InjectableShaders/planetPrime/fragment.js";
+import seaMaterialVShader from "@/Application/InjectableShaders/planetPrime/sea/vertex.js";
+import seaMaterialFShader from "@/Application/InjectableShaders/planetPrime/sea/fragment.js";
+import aliveTreeMaterialVShader from "@/Application/InjectableShaders/planetPrime/aliveTrees/vertex.js";
 
 export default class PlanetPrime extends EventEmitter {
   constructor() {
@@ -39,6 +40,12 @@ export default class PlanetPrime extends EventEmitter {
       uBigWaveSpeed: { value: this.customUniforms.uBigWaveSpeed.value },
       uColorOffset: { value: this.customUniforms.uColorOffset.value },
       uColorMultiplier: { value: this.customUniforms.uColorMultiplier.value },
+      uAliveTreeAmplitude: {
+        value: this.customUniforms.uAliveTreeAmplitude.value,
+      },
+      uAliveTreeFrequency: {
+        value: this.customUniforms.uAliveTreeFrequency.value,
+      },
     };
 
     this.debugFolder = null;
@@ -111,24 +118,56 @@ export default class PlanetPrime extends EventEmitter {
           () =>
             (this.customUniforms.uColorMultiplier.value = this.debugObject.uColorMultiplier.value)
         );
+
+      this.debugFolder
+        .add(this.debugObject.uAliveTreeAmplitude, "value")
+        .min(-5)
+        .max(5)
+        .step(0.001)
+        .name("uAliveTreeAmplitude")
+        .onChange(
+          () =>
+            (this.customUniforms.uAliveTreeAmplitude.value = this.debugObject.uAliveTreeAmplitude.value)
+        );
+
+      this.debugFolder
+        .add(this.debugObject.uAliveTreeFrequency, "value")
+        .min(-5)
+        .max(5)
+        .step(0.001)
+        .name("uAliveTreeFrequency")
+        .onChange(
+          () =>
+            (this.customUniforms.uAliveTreeFrequency.value = this.debugObject.uAliveTreeFrequency.value)
+        );
     }
   }
 
   setupMaterials() {
     // material for planet EXCEPT SEA
     this.planetBakedMaterial = new THREE.MeshBasicMaterial({
-      map: this.resources.items.planetPrimeBakedTexture.file,
+      map: this.bakedTexture,
     });
 
     // material for sea
     this.seaMaterial = new THREE.MeshBasicMaterial({
-      map: this.resources.items.planetPrimeBakedTexture.file,
+      map: this.bakedTexture,
+    });
+
+    // material for trees
+    this.aliveTreeMaterial = new THREE.MeshBasicMaterial({
+      map: this.bakedTexture,
     });
   }
 
   attachMaterialsToObjects() {
     this.instance.traverse((child) => {
       if (child.name == "PlanetWater") child.material = this.seaMaterial;
+      else if (
+        child.name.toLowerCase().includes("tree") &&
+        !child.name.toLowerCase().includes("dead")
+      )
+        child.material = this.aliveTreeMaterial;
       else child.material = this.planetBakedMaterial;
     });
   }
@@ -153,6 +192,12 @@ export default class PlanetPrime extends EventEmitter {
       uColorMultiplier: {
         value: 0.123,
       },
+      uAliveTreeAmplitude: {
+        value: 0.04,
+      },
+      uAliveTreeFrequency: {
+        value: 2.7,
+      },
     };
 
     this.seaMaterial.onBeforeCompile = (shader) => {
@@ -163,8 +208,25 @@ export default class PlanetPrime extends EventEmitter {
       shader.uniforms.uColorOffset = this.customUniforms.uColorOffset;
       shader.uniforms.uColorMultiplier = this.customUniforms.uColorMultiplier;
 
-      shader.vertexShader = injectIntoShader(vShader, shader.vertexShader);
-      shader.fragmentShader = injectIntoShader(fShader, shader.fragmentShader);
+      shader.vertexShader = injectIntoShader(
+        seaMaterialVShader,
+        shader.vertexShader
+      );
+      shader.fragmentShader = injectIntoShader(
+        seaMaterialFShader,
+        shader.fragmentShader
+      );
+    };
+
+    this.aliveTreeMaterial.onBeforeCompile = (shader) => {
+      shader.uniforms.uTime = this.customUniforms.uTime;
+      shader.uniforms.uAliveTreeAmplitude = this.customUniforms.uAliveTreeAmplitude;
+      shader.uniforms.uAliveTreeFrequency = this.customUniforms.uAliveTreeFrequency;
+
+      shader.vertexShader = injectIntoShader(
+        aliveTreeMaterialVShader,
+        shader.vertexShader
+      );
     };
   }
 
@@ -177,10 +239,10 @@ export default class PlanetPrime extends EventEmitter {
   preProcessBakedTextures() {
     // As the texture was baked in blender, the TOP property is messed up
     // changing FlipY to false otherwise the applied texture is inverted
-    this.resources.items.planetPrimeBakedTexture.file.flipY = false;
+    this.bakedTexture = this.resources.items.planetPrimeBakedTexture.file;
+    this.bakedTexture.flipY = false;
 
     // Better colors (NOTE - For this to work, the renderer should have this encoding as well)
-    this.resources.items.planetPrimeBakedTexture.file.encoding =
-      THREE.sRGBEncoding;
+    this.bakedTexture.encoding = THREE.sRGBEncoding;
   }
 }
