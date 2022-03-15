@@ -1,7 +1,6 @@
 import EventEmitter from "@/Application/Utils/EventEmitter.js";
 import Application from "@/Application/Application.js";
 import * as THREE from "three";
-import { Object3D } from "three";
 
 export default class Airplane extends EventEmitter {
   constructor() {
@@ -14,56 +13,29 @@ export default class Airplane extends EventEmitter {
     this.debug = this.application.debug;
 
     this.propeller = null;
+    this.airplane = null;
 
     this.resources.on("ready", () => {
       this.setupDebugObject();
-      this.instance = this.resources.items.airplaneModel.file.scene;
+      this.instance = this.resources.items.airplaneModel.file.scene.children[0];
       this.bakedTexture = this.resources.items.airplaneBakedTexture.file;
       this.preProcessBakedTextures();
       this.setupMaterials();
       this.attachMaterialsToObjects();
       this.scene.add(this.instance);
-
-      this.rotateAroundPlanet();
       this.update();
     });
   }
 
   setupDebugObject() {
-    this.debugObject = {
-      pivotRotation: {
-        x: Math.PI / 2,
-        y: Math.PI / 2,
-        z: Math.PI / 2,
-      },
-    };
+    this.debugObject = {};
 
     this.debugFolder = null;
     if (this.debug.active)
       this.debugFolder = this.debug.ui.addFolder("Airplane");
 
-    if (this.debugFolder != null) {
-      this.debugFolder
-        .add(this.debugObject.pivotRotation, "x")
-        .min(0)
-        .max(Math.PI * 2)
-        .step(0.00001)
-        .onChange((value) => (this.pivot.rotation.x = value));
-
-      this.debugFolder
-        .add(this.debugObject.pivotRotation, "y")
-        .min(0)
-        .max(Math.PI * 2)
-        .step(0.00001)
-        .onChange((value) => (this.pivot.rotation.y = value));
-
-      this.debugFolder
-        .add(this.debugObject.pivotRotation, "z")
-        .min(0)
-        .max(Math.PI * 2)
-        .step(0.00001)
-        .onChange((value) => (this.pivot.rotation.z = value));
-    }
+    // if (this.debugFolder != null) {
+    // }
   }
 
   preProcessBakedTextures() {
@@ -86,24 +58,17 @@ export default class Airplane extends EventEmitter {
       child.material = this.airplaneMaterial;
 
       if (child.name == "PlanePropeller") this.propeller = child;
+      else if (child.name == "AirPlane") this.airplane = child;
     });
-  }
-
-  rotateAroundPlanet() {
-    // https://stackoverflow.com/questions/44287255/whats-the-right-way-to-rotate-an-object-around-a-point-in-three-js
-    this.pivot = new Object3D();
-    this.pivot.add(this.instance);
-    this.scene.add(this.pivot);
-
-    this.pivot.rotation.x = Math.PI * 2;
-    this.pivot.rotation.z = Math.PI * 2;
   }
 
   update() {
     this.time.on("tick", () => {
+      // rotate propeller
       this.propeller.rotation.z = this.time.elapsed * 0.01;
-      this.pivot.rotation.x -= 0.001;
-      this.pivot.rotation.z += 0.001;
+
+      // rotate the whole plane
+      this.instance.rotation.z = this.time.elapsed * 0.0001 + Math.PI;
     });
   }
 }

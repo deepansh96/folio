@@ -19,7 +19,7 @@ export default [
 
          transformed.z += uAliveTreeAmplitude * pow(distance(transformed, vec3(0.0)), 2.0) * sin(uTime * uAliveTreeFrequency);
         //  transformed.y -= uAliveTreeAmplitude * pow(distance(transformed, vec3(0.0)), 2.0) * sin(uTime * uAliveTreeFrequency);
-         
+
          mvPosition = modelMatrix * vec4(transformed, 1.0);
          mvPosition = viewMatrix * mvPosition;
          gl_Position = projectionMatrix * mvPosition;

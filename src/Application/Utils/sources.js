@@ -20,7 +20,19 @@ export default [
   {
     name: "airplaneBakedTexture",
     type: "texture",
-    path: "/assets/textures/AirplaneBaked512.jpg",
+    path: "/assets/textures/AboveGroundBaked256.jpg",
+  },
+
+  // satellite
+  {
+    name: "satelliteModel",
+    type: "GLTFModel",
+    path: "/assets/models/satellite.glb",
+  },
+  {
+    name: "satelliteBakedTexture",
+    type: "texture",
+    path: "/assets/textures/AboveGroundBaked256.jpg",
   },
 
   // gradients

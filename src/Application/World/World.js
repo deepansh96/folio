@@ -4,6 +4,7 @@ import Grid from "@/Application/World/Objects/Grid";
 // import Axes from "../Utils/Axes";
 import PlanetPrime from "@/Application/World/Objects/PlanetPrime";
 import Airplane from "@/Application/World/Objects/Airplane";
+import Satellite from "@/Application/World/Objects/Satellite";
 
 export default class World {
   constructor() {
@@ -33,5 +34,6 @@ export default class World {
     });
 
     this.airplane = new Airplane();
+    this.satellite = new Satellite();
   }
 }
